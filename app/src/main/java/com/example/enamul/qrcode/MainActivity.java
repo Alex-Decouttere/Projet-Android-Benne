@@ -38,10 +38,7 @@ public class MainActivity extends AppCompatActivity {
     Button button;
     Button btnScan;
     EditText editText;
-    String EditTextValue ;
-    Thread thread ;
-    public final static int QRcodeWidth = 350 ;
-    Bitmap bitmap ;
+
     private static final int PERMISSIONS_FINE_LOCATION = 99 ;
     TextView tv_qr_readTxt,lat_long;
     FusedLocationProviderClient fusedLocationProviderClient;
