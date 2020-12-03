@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     EditText editText;
 
     private static final int PERMISSIONS_FINE_LOCATION = 99 ;
-    TextView tv_qr_readTxt,lat_long;
+    TextView tv_qr_readTxt,lat,longi;
     FusedLocationProviderClient fusedLocationProviderClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +54,8 @@ public class MainActivity extends AppCompatActivity {
         button = (Button)findViewById(R.id.button);
         btnScan = (Button)findViewById(R.id.btnScan);
         tv_qr_readTxt = (TextView) findViewById(R.id.tv_qr_readTxt);
-        lat_long = findViewById(R.id.lat_long);
+        lat = findViewById(R.id.lat);
+        longi = findViewById(R.id.longi);
 
 
 
@@ -109,7 +110,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUIValues(Location location) {
-        lat_long.setText(String.valueOf(location.getLatitude())+String.valueOf(location.getLongitude()));
+        lat.setText(String.valueOf(location.getLatitude()));
+        longi.setText(String.valueOf(location.getLongitude()));
     }
 
 
@@ -129,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 tv_qr_readTxt.setText(result.getContents());
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 SmsManager.getDefault().sendTextMessage("0688247608",
-                        null, String.valueOf(lat_long.getText()),null,null);
+                        null, "lat:"+String.valueOf(lat.getText())+"long:"+String.valueOf(longi.getText()),null,null);
             }
         } else {
             // This is important, otherwise the result will not be passed to the fragment

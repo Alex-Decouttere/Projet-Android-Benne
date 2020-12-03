@@ -78,7 +78,12 @@ tools:context="com.example.enamul.qrcode.MainActivity">
         android:src="@android:drawable/ic_dialog_email" />
 
     <TextView
-        android:id="@+id/lat_long"
+        android:id="@+id/lat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
+    <TextView
+        android:id="@+id/longi"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="TextView" />
