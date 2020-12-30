@@ -114,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
 
             } else {
                 Log.e("Scan", "Scanned");
-
                 tv_qr_readTxt.setText(result.getContents());
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 SmsManager.getDefault().sendTextMessage("0631711796",
