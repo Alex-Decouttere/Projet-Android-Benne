@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Projet-Android-Benne.iml" filepath="$PROJECT_DIR$/.idea/modules/Projet-Android-Benne.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Projet-Android-Benne.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Projet-Android-Benne.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/QRCode.iml" filepath="$PROJECT_DIR$/.idea/modules/QRCode.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/QRCode.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/QRCode.app.iml" />
     </modules>
   </component>
 </project>
