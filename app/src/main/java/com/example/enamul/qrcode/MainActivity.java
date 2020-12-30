@@ -1,9 +1,12 @@
 package com.example.enamul.qrcode;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 
@@ -14,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,15 +37,22 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
-    ImageView imageView;
     Button button;
     Button btnScan;
     EditText editText;
 
-    private static final int PERMISSIONS_FINE_LOCATION = 99 ;
-    TextView tv_qr_readTxt,lat,longi;
+    private static final int PERMISSIONS_FINE_LOCATION = 99;
+    TextView tv_qr_readTxt,lat,longi, textAddress;
     FusedLocationProviderClient fusedLocationProviderClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         tv_qr_readTxt = (TextView) findViewById(R.id.tv_qr_readTxt);
         lat = findViewById(R.id.lat);
         longi = findViewById(R.id.longi);
+        textAddress = findViewById(R.id.textAddress);
 
         btnScan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
                 integrator.setBeepEnabled(false);
                 integrator.setBarcodeImageEnabled(false);
                 integrator.initiateScan();
-
             }
         });
         updateGPS();
@@ -103,6 +114,14 @@ public class MainActivity extends AppCompatActivity {
     private void updateUIValues(Location location) {
         lat.setText(String.valueOf(location.getLatitude()));
         longi.setText(String.valueOf(location.getLongitude()));
+        Geocoder gcd = new Geocoder(this, Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = gcd.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        textAddress.setText(String.valueOf(addresses.get(0).getLocality() + ", " + addresses.get(0).getAdminArea() + ", " + addresses.get(0).getCountryName()));
     }
 
     @Override
@@ -111,10 +130,8 @@ public class MainActivity extends AppCompatActivity {
         if(result != null) {
             if(result.getContents() == null) {
                 Log.e("Scan*******", "Cancelled scan");
-
             } else {
                 Log.e("Scan", "Scanned");
-
                 tv_qr_readTxt.setText(result.getContents());
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 SmsManager.getDefault().sendTextMessage("0631711796",
