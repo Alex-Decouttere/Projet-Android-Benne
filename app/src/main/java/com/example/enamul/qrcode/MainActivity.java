@@ -47,22 +47,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
-        imageView = (ImageView)findViewById(R.id.imageView);
         editText = (EditText)findViewById(R.id.editText);
-        button = (Button)findViewById(R.id.button);
         btnScan = (Button)findViewById(R.id.btnScan);
         tv_qr_readTxt = (TextView) findViewById(R.id.tv_qr_readTxt);
         lat = findViewById(R.id.lat);
         longi = findViewById(R.id.longi);
 
-
-
         btnScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 IntentIntegrator integrator = new IntentIntegrator(MainActivity.this);
                 integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
                 integrator.setPrompt("Scan");
@@ -90,18 +83,16 @@ public class MainActivity extends AppCompatActivity {
                 }
         }
     }
-    private void updateGPS() {
 
+    private void updateGPS() {
         fusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(MainActivity.this);
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
                     updateUIValues(location);
-
                 }
             });
-
         }else{
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_FINE_LOCATION);
@@ -113,10 +104,6 @@ public class MainActivity extends AppCompatActivity {
         lat.setText(String.valueOf(location.getLatitude()));
         longi.setText(String.valueOf(location.getLongitude()));
     }
-
-
-
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -130,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
                 tv_qr_readTxt.setText(result.getContents());
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
-                SmsManager.getDefault().sendTextMessage("0688247608",
+                SmsManager.getDefault().sendTextMessage("0631711796",
                         null, "lat:"+String.valueOf(lat.getText())+"long:"+String.valueOf(longi.getText()),null,null);
             }
         } else {
