@@ -114,11 +114,10 @@ public class MainActivity extends AppCompatActivity {
 
             } else {
                 Log.e("Scan", "Scanned");
-
                 tv_qr_readTxt.setText(result.getContents());
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 SmsManager.getDefault().sendTextMessage("0631711796",
-                        null, "lat:"+String.valueOf(lat.getText())+"long:"+String.valueOf(longi.getText()),null,null);
+                        null, "La poubelle n°"+String.valueOf(tv_qr_readTxt.getText())+"\nse trouve en : \nlat:"+String.valueOf(lat.getText())+"\nlong:"+String.valueOf(longi.getText()),null,null);
             }
         } else {
             // This is important, otherwise the result will not be passed to the fragment
