@@ -121,7 +121,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        textAddress.setText(String.valueOf(addresses.get(0).getFeatureName()+", "  + addresses.get(0).getThoroughfare()+", " + addresses.get(0).getLocality()));
+        textAddress.setText(String.valueOf(addresses.get(0).getFeatureName()+", "  +
+                addresses.get(0).getThoroughfare()+", " + addresses.get(0).getLocality()));
     }
 
     @Override
@@ -129,13 +130,14 @@ public class MainActivity extends AppCompatActivity {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if(result != null) {
             if(result.getContents() == null) {
-                Log.e("Scan*******", "Cancelled scan");
+                Log.e("Scan*******", "Scan annulé");
             } else {
-                Log.e("Scan", "Scanned");
+                Log.e("Scan", "Scanné");
                 tv_qr_readTxt.setText(result.getContents());
-                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Scanné: " + result.getContents(), Toast.LENGTH_LONG).show();
                 SmsManager.getDefault().sendTextMessage("0631711796",
-                        null, "La poubelle n°"+String.valueOf(tv_qr_readTxt.getText())+" se trouve au : "+String.valueOf(textAddress.getText()),null,null);
+                        null, "La poubelle n°"+String.valueOf(tv_qr_readTxt.getText())+
+                                " se trouve au : "+String.valueOf(textAddress.getText()),null,null);
             }
         } else {
             // This is important, otherwise the result will not be passed to the fragment
