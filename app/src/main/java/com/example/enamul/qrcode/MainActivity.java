@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.zxing.BarcodeFormat;
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 integrator.initiateScan();
             }
         });
+
         updateGPS();
     }
 
@@ -114,25 +116,49 @@ public class MainActivity extends AppCompatActivity {
             mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY );
             mLocationRequest.setInterval(500);
             mLocationRequest.setFastestInterval(500);
-            getFusedLocationProviderClient(this).requestLocationUpdates(mLocationRequest, new LocationCallback(),null);
+            getFusedLocationProviderClient(this).requestLocationUpdates(mLocationRequest, new LocationCallback() {
+                        @Override
+                        public void onLocationResult(LocationResult locationResult) {
+                            // do work here
+                            onLocationChanged(locationResult.getLastLocation());
+                        }
+                    },
+                    Looper.myLooper());
+                   CountDownTimer mCountDownTimer;
+            mCountDownTimer=new CountDownTimer(5000,1000) {
 
+                @Override
+                public void onTick(long millisUntilFinished) {}
+
+                @Override
+                public void onFinish() {
+
+                }
+            };
+            mCountDownTimer.start();
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
                     updateUIValues(location);
                 }
             });
-        }else{
+        }
+        else{
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_FINE_LOCATION);
             }
         }
-        Looper.myLooper();
+        }
+
+
+
+    private void onLocationChanged(Location lastLocation) {
+        lat.setText(String.valueOf(lastLocation.getLatitude()));
+        longi.setText(String.valueOf(lastLocation.getLongitude()));
     }
 
     private void updateUIValues(Location location) {
-        lat.setText(String.valueOf(location.getLatitude()));
-        longi.setText(String.valueOf(location.getLongitude()));
+
         Geocoder gcd = new Geocoder(this, Locale.getDefault());
         List<Address> addresses = null;
         try {
@@ -141,20 +167,11 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         textAddress.setText(String.valueOf(addresses.get(0).getFeatureName()+", "  + addresses.get(0).getThoroughfare()+", " + addresses.get(0).getLocality()));
-        CountDownTimer mCountDownTimer;
-        mCountDownTimer=new CountDownTimer(5000,1000) {
 
-            @Override
-            public void onTick(long millisUntilFinished) {}
-
-            @Override
-            public void onFinish() {
-                if (textAddress.getText() != "loading...") {
-                    progressBar.setVisibility(View.GONE);
-                }
-            }
-        };
-        mCountDownTimer.start();
+        if (textAddress.getText() != "loading...") {
+            progressBar.setVisibility(View.GONE);
+        }
+        Looper.myLooper();
     }
 
     @Override
