@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,6 +29,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.zxing.BarcodeFormat;
@@ -44,6 +47,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
+
 public class MainActivity extends AppCompatActivity {
     Button button;
     Button btnScan;
@@ -52,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSIONS_FINE_LOCATION = 99;
     TextView tv_qr_readTxt,lat,longi, textAddress;
     FusedLocationProviderClient fusedLocationProviderClient;
+    private LocationRequest mLocationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +102,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateGPS() {
-        fusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(MainActivity.this);
+        fusedLocationProviderClient= getFusedLocationProviderClient(MainActivity.this);
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED) {
+            mLocationRequest = new LocationRequest();
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY );
+            mLocationRequest.setInterval(500);
+            mLocationRequest.setFastestInterval(500);
+            getFusedLocationProviderClient(this).requestLocationUpdates(mLocationRequest, new LocationCallback(),null);
+
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
@@ -109,6 +121,8 @@ public class MainActivity extends AppCompatActivity {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_FINE_LOCATION);
             }
         }
+        Looper.myLooper();
+
     }
 
     private void updateUIValues(Location location) {
@@ -121,8 +135,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        textAddress.setText(String.valueOf(addresses.get(0).getFeatureName()+", "  +
-                addresses.get(0).getThoroughfare()+", " + addresses.get(0).getLocality()));
+        textAddress.setText(String.valueOf(addresses.get(0).getFeatureName()+", "  + addresses.get(0).getThoroughfare()+", " + addresses.get(0).getLocality()));
     }
 
     @Override
@@ -130,14 +143,13 @@ public class MainActivity extends AppCompatActivity {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if(result != null) {
             if(result.getContents() == null) {
-                Log.e("Scan*******", "Scan annulé");
+                Log.e("Scan*******", "Cancelled scan");
             } else {
-                Log.e("Scan", "Scanné");
+                Log.e("Scan", "Scanned");
                 tv_qr_readTxt.setText(result.getContents());
-                Toast.makeText(this, "Scanné: " + result.getContents(), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 SmsManager.getDefault().sendTextMessage("0631711796",
-                        null, "La poubelle n°"+String.valueOf(tv_qr_readTxt.getText())+
-                                " se trouve au : "+String.valueOf(textAddress.getText()),null,null);
+                        null, "La poubelle n°"+String.valueOf(tv_qr_readTxt.getText())+" se trouve au : "+String.valueOf(textAddress.getText()),null,null);
             }
         } else {
             // This is important, otherwise the result will not be passed to the fragment
