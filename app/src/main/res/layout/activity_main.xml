@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="16dp"
     tools:context="com.example.enamul.qrcode.MainActivity">
 
     <LinearLayout
@@ -21,12 +22,11 @@
             android:textAllCaps="false"
             android:textSize="16sp" />
 
-
         <ProgressBar
             android:id="@+id/progressBar"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:visibility="gone"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible"/>
 
         <TextView
             android:id="@+id/textLatLong"
@@ -39,8 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="TextView"/>
-
+            android:text="loading..."/>
 
         <TextView
             android:id="@+id/tv_qr_readTxt"
@@ -51,14 +50,14 @@
             android:id="@+id/lat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:text="loading..." />
 
         <TextView
             android:id="@+id/longi"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:text="loading..." />
 
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

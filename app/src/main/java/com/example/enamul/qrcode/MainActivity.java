@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     Button button;
     Button btnScan;
     EditText editText;
+    ProgressBar progressBar;
 
     private static final int PERMISSIONS_FINE_LOCATION = 99;
     TextView tv_qr_readTxt,lat,longi, textAddress;
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         lat = findViewById(R.id.lat);
         longi = findViewById(R.id.longi);
         textAddress = findViewById(R.id.textAddress);
+        progressBar = findViewById(R.id.progressBar);
 
         btnScan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         Looper.myLooper();
-
     }
 
     private void updateUIValues(Location location) {
@@ -136,6 +138,9 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         textAddress.setText(String.valueOf(addresses.get(0).getFeatureName()+", "  + addresses.get(0).getThoroughfare()+", " + addresses.get(0).getLocality()));
+        if (textAddress.getText() != "loading...") {
+            progressBar.setVisibility(View.GONE);
+        }
     }
 
     @Override
