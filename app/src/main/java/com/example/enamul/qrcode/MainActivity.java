@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Looper;
 import android.telephony.SmsManager;
 import android.text.TextUtils;
@@ -47,6 +48,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
@@ -138,9 +141,20 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         textAddress.setText(String.valueOf(addresses.get(0).getFeatureName()+", "  + addresses.get(0).getThoroughfare()+", " + addresses.get(0).getLocality()));
-        if (textAddress.getText() != "loading...") {
-            progressBar.setVisibility(View.GONE);
-        }
+        CountDownTimer mCountDownTimer;
+        mCountDownTimer=new CountDownTimer(5000,1000) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {}
+
+            @Override
+            public void onFinish() {
+                if (textAddress.getText() != "loading...") {
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+        };
+        mCountDownTimer.start();
     }
 
     @Override
