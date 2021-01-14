@@ -162,9 +162,13 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Log.e("Scan", "Scanned");
                 tv_qr_readTxt.setText(result.getContents());
-                Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
-                SmsManager.getDefault().sendTextMessage("0631711796",
-                        null, "La benne n°"+String.valueOf(tv_qr_readTxt.getText())+"\n"+String.valueOf(txt_date.getText())+"\n"+String.valueOf(textAddress.getText()),null,null);
+                try {
+                    SmsManager.getDefault().sendTextMessage("0631711796",
+                            null, "La benne n°"+String.valueOf(tv_qr_readTxt.getText())+"\n"+String.valueOf(txt_date.getText())+"\n"+String.valueOf(textAddress.getText()),null,null);
+                    Toast.makeText(getApplicationContext(),"Envoi reussi!",Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(),"Echec de l'envoie,réessayer!",Toast.LENGTH_LONG).show();
+                }
             }
         } else {
             // This is important, otherwise the result will not be passed to the fragment
