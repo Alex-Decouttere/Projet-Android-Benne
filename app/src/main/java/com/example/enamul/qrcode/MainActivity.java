@@ -44,6 +44,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,6 +60,11 @@ public class MainActivity extends AppCompatActivity {
     Button btnScan;
     EditText editText;
     ProgressBar progressBar;
+    Date now = new Date();
+    DateFormat dateformatter = DateFormat.getDateInstance(DateFormat.SHORT);
+    String formattedDate = dateformatter.format(now);
+    DateFormat timeformatter = DateFormat.getTimeInstance(DateFormat.SHORT);
+    String formattedTime = timeformatter.format(now);
 
     private static final int PERMISSIONS_FINE_LOCATION = 99;
     TextView tv_qr_readTxt,lat,longi, textAddress;
@@ -90,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
                 integrator.initiateScan();
             }
         });
-
 
         textAddress.setText(String.valueOf("loading..."));
         updateGPS();
@@ -178,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 tv_qr_readTxt.setText(result.getContents());
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 SmsManager.getDefault().sendTextMessage("0631711796",
-                        null, "La poubelle n°"+String.valueOf(tv_qr_readTxt.getText())+" se trouve au : "+String.valueOf(textAddress.getText()),null,null);
+                        null, "La benne n°"+String.valueOf(tv_qr_readTxt.getText())+" a été scannée le "+String.valueOf(formattedDate)+" à "+String.valueOf(formattedTime)+" à l'adresse suivante : "+String.valueOf(textAddress.getText()),null,null);
             }
         } else {
             // This is important, otherwise the result will not be passed to the fragment
