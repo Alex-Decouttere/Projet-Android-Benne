@@ -92,9 +92,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
+        textAddress.setText(String.valueOf("loading..."));
         updateGPS();
-
     }
 
     @Override
@@ -130,10 +129,13 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(Location location) {
                     if(location != null){
-                        updateUIValues(location);}
+                        updateUIValues(location);
+                    }
 
-                    else{lat.setText(String.valueOf("txt_lat"));
-                        longi.setText(String.valueOf("txt_long"));}
+                    else
+                        {lat.setText(String.valueOf("loading..."));
+                        longi.setText(String.valueOf("loading..."));
+                        }
                 }
             });
         }
@@ -142,9 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_FINE_LOCATION);
             }
         }
-        }
-
-
+    }
 
     private void onLocationChanged(Location lastLocation) {
         lat.setText(String.valueOf(lastLocation.getLatitude()));
@@ -153,19 +153,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUIValues(Location location) {
-
-        Geocoder gcd = new Geocoder(this, Locale.getDefault());
-        List<Address> addresses = null;
-        try {
-            addresses = gcd.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(textAddress.getText() == String.valueOf("loading...")){
+            Geocoder gcd = new Geocoder(this, Locale.getDefault());
+            List<Address> addresses = null;
+            try {
+                addresses = gcd.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            textAddress.setText(String.valueOf(addresses.get(0).getFeatureName()+", "  + addresses.get(0).getThoroughfare()+", " + addresses.get(0).getLocality()));
+            Looper.myLooper();
         }
-        textAddress.setText(String.valueOf(addresses.get(0).getFeatureName()+", "  + addresses.get(0).getThoroughfare()+", " + addresses.get(0).getLocality()));
-
-
-        Looper.myLooper();
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
