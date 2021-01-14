@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         lat = findViewById(R.id.lat);
         longi = findViewById(R.id.longi);
         textAddress = findViewById(R.id.textAddress);
-        progressBar = findViewById(R.id.progressBar);
+//        progressBar = findViewById(R.id.progressBar);
 
         btnScan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,21 +91,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
         updateGPS();
+
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
-            case PERMISSIONS_FINE_LOCATION:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    updateGPS();
-                }
-                else{
-                    Toast.makeText(this,"This app requires permission to be granted",Toast.LENGTH_SHORT).show();
-                    finish();
-                }
+        if (requestCode == PERMISSIONS_FINE_LOCATION) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                updateGPS();
+            } else {
+                Toast.makeText(this, "This app requires permission to be granted", Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
     }
 
@@ -124,22 +125,15 @@ public class MainActivity extends AppCompatActivity {
                         }
                     },
                     Looper.myLooper());
-                   CountDownTimer mCountDownTimer;
-            mCountDownTimer=new CountDownTimer(5000,1000) {
 
-                @Override
-                public void onTick(long millisUntilFinished) {}
-
-                @Override
-                public void onFinish() {
-
-                }
-            };
-            mCountDownTimer.start();
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-                    updateUIValues(location);
+                    if(location != null){
+                        updateUIValues(location);}
+
+                    else{lat.setText(String.valueOf("txt_lat"));
+                        longi.setText(String.valueOf("txt_long"));}
                 }
             });
         }
@@ -155,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
     private void onLocationChanged(Location lastLocation) {
         lat.setText(String.valueOf(lastLocation.getLatitude()));
         longi.setText(String.valueOf(lastLocation.getLongitude()));
+        updateUIValues(lastLocation);
     }
 
     private void updateUIValues(Location location) {
@@ -168,9 +163,7 @@ public class MainActivity extends AppCompatActivity {
         }
         textAddress.setText(String.valueOf(addresses.get(0).getFeatureName()+", "  + addresses.get(0).getThoroughfare()+", " + addresses.get(0).getLocality()));
 
-        if (textAddress.getText() != "loading...") {
-            progressBar.setVisibility(View.GONE);
-        }
+
         Looper.myLooper();
     }
 
