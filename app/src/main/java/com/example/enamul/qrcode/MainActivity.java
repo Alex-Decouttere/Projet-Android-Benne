@@ -1,56 +1,37 @@
 package com.example.enamul.qrcode;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.net.Uri;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Looper;
 import android.telephony.SmsManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
+
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
@@ -58,10 +39,13 @@ public class MainActivity extends AppCompatActivity {
     Button button;
     Button btnScan;
     EditText editText;
-    ProgressBar progressBar;
-
+    Date now = new Date();
+    DateFormat dateformatter = DateFormat.getDateInstance(DateFormat.SHORT);
+    String formattedDate = dateformatter.format(now);
+    DateFormat timeformatter = DateFormat.getTimeInstance(DateFormat.SHORT);
+    String formattedTime = timeformatter.format(now);
     private static final int PERMISSIONS_FINE_LOCATION = 99;
-    TextView tv_qr_readTxt,lat,longi, textAddress;
+    TextView tv_qr_readTxt,lat,longi, textAddress,txt_date;
     FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest mLocationRequest;
 
@@ -73,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
         editText = (EditText)findViewById(R.id.editText);
         btnScan = (Button)findViewById(R.id.btnScan);
         tv_qr_readTxt = (TextView) findViewById(R.id.tv_qr_readTxt);
+        txt_date = (TextView) findViewById(R.id.txt_date);
+
         lat = findViewById(R.id.lat);
         longi = findViewById(R.id.longi);
         textAddress = findViewById(R.id.textAddress);
@@ -91,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        txt_date.setText(String.valueOf(formattedDate+" à "+formattedTime));
         textAddress.setText(String.valueOf("loading..."));
         updateGPS();
     }
@@ -178,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                 tv_qr_readTxt.setText(result.getContents());
                 Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 SmsManager.getDefault().sendTextMessage("0631711796",
-                        null, "La poubelle n°"+String.valueOf(tv_qr_readTxt.getText())+" se trouve au : "+String.valueOf(textAddress.getText()),null,null);
+                        null, "La benne n°"+String.valueOf(tv_qr_readTxt.getText())+"\n"+String.valueOf(txt_date.getText())+"\n"+String.valueOf(textAddress.getText()),null,null);
             }
         } else {
             // This is important, otherwise the result will not be passed to the fragment
